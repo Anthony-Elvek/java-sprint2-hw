@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 
-public class MonthlyLogic {
+public class MonthlyReportLogic {
     ArrayList<MonthlyReportRecord> monthlyReportRecords;
     FileReader fileReader = new FileReader();
 
-    MonthlyLogic(){
+    MonthlyReportLogic(){
         monthlyReportRecords = new ArrayList<>();
     }
 
@@ -25,9 +25,23 @@ public class MonthlyLogic {
         }
     }
 
-    String monthlyReportIncome(MonthlyReportRecord monthlyReportRecord){
+    int monthlyReportIncome(){
+        int sum = 0;
         for (MonthlyReportRecord month : monthlyReportRecords){
-            if (month.isExpense == true){
+            if (!month.isExpense){
+                sum += month.quantity * month.sumOfOne;
+            }
         }
+        return sum;
+    }
+
+    int monthlyReportExpense(){
+        int sum = 0;
+        for (MonthlyReportRecord month : monthlyReportRecords){
+            if (month.isExpense){
+                sum += month.quantity * month.sumOfOne;
+            }
+        }
+        return sum;
     }
 }

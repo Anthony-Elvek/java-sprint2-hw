@@ -1,5 +1,3 @@
-package DataReports;
-
 public class YearlyReportRecord {
     int month;
     int amount;

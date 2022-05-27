@@ -1,16 +1,14 @@
-package DataReports;
-
 public class MonthlyReportRecord {
     String itemName;
     boolean isExpense;
     int quantity;
-    int simOfOne;
+    int sumOfOne;
 
-    public MonthlyReportRecord(String itemName, boolean isExpense, int quantity, int simOfOne) {
+    public MonthlyReportRecord(String itemName, boolean isExpense, int quantity, int sumOfOne) {
         this.itemName = itemName;
         this.isExpense = isExpense;
         this.quantity = quantity;
-        this.simOfOne = simOfOne;
+        this.sumOfOne = sumOfOne;
     }
 
 
