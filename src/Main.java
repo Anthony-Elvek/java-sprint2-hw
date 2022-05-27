@@ -1,7 +1,2 @@
-public class Main {
-
-    public static void main(String[] args) {
-        // Поехали!
-    }
+package PACKAGE_NAME;public class Main {
 }
-
