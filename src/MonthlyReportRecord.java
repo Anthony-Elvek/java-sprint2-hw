@@ -10,6 +10,4 @@ public class MonthlyReportRecord {
         this.quantity = quantity;
         this.sumOfOne = sumOfOne;
     }
-
-
 }

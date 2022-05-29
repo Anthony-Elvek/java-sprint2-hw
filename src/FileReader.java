@@ -12,6 +12,4 @@ public class FileReader {
             return null;
         }
     }
-
-
 }

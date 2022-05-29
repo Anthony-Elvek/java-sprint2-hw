@@ -1,14 +1,14 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class InterfaceLogic {
+public class AccountingAutomation {
     HashMap<Integer, ArrayList<MonthlyReportRecord>> monthlyReportRecords;
     ArrayList<YearlyReportRecord> yearlyReportRecords;
     FileReader fileReader = new FileReader();
     String[] monthName = {"январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"};
     String[] yearName = {"2021"};
 
-    InterfaceLogic() {
+    AccountingAutomation() {
         monthlyReportRecords = new HashMap<>();
         yearlyReportRecords = new ArrayList<>();
     }
@@ -38,7 +38,7 @@ public class InterfaceLogic {
     }
 
     void getYearlyRecords() {
-        if(yearlyReportRecords.isEmpty()) {
+        if (yearlyReportRecords.isEmpty()) {
             String yearRecord = fileReader.readFileContentsOrNull("resources/y.2021.csv");
             String[] lines = yearRecord.split("\n");
             for (int i = 1; i < lines.length; i++) {
@@ -56,69 +56,64 @@ public class InterfaceLogic {
         }
     }
 
-    int getSumIncomeOfTheMonth(int monthKey){
+    int getSumIncomeOfTheMonth(int monthKey) {
         int sumIncome = 0;
-        for (MonthlyReportRecord month : monthlyReportRecords.get(monthKey)){
-            if (month.isExpense){
+        for (MonthlyReportRecord month : monthlyReportRecords.get(monthKey)) {
+            if (!month.isExpense) {
                 sumIncome += month.quantity * month.sumOfOne;
             }
         }
         return sumIncome;
     }
 
-    int getSumExpenseOfTheMonth(int monthKey){
+    int getSumExpenseOfTheMonth(int monthKey) {
         int sumExpense = 0;
-        for (MonthlyReportRecord month : monthlyReportRecords.get(monthKey)){
-            if (!month.isExpense){
+        for (MonthlyReportRecord month : monthlyReportRecords.get(monthKey)) {
+            if (month.isExpense) {
                 sumExpense += month.quantity * month.sumOfOne;
             }
         }
         return sumExpense;
     }
 
-    // to do: переделать вывод информации, чтобы после полной проверки, в конце печатал информацию о месяцах где есть несоответствие можно создать аррей лист
-    boolean checkAmountOfReports() {
-        boolean check = false;
+    void checkAmountOfReports() {
+        int sum = 0;
         for (YearlyReportRecord yearlyReportRecord : yearlyReportRecords) {
-            if (!yearlyReportRecord.isExpense) {
+            if (yearlyReportRecord.isExpense) {
                 if (getSumExpenseOfTheMonth(yearlyReportRecord.month) == yearlyReportRecord.amount) {
-                    check = true;
+                    sum++;
                 } else {
-                    System.out.println("Сумма дохода за " + monthName[yearlyReportRecord.month - 1] + " не соотвутствуют годовому отчету");
-                    check= false;
+                    System.out.println("Убыток за " + monthName[yearlyReportRecord.month - 1] + " несоответствует годовому отчету");
+                    sum--;
                 }
             } else {
                 if (getSumIncomeOfTheMonth(yearlyReportRecord.month) == yearlyReportRecord.amount) {
-                    check = true;
+                    sum++;
                 } else {
-                    System.out.println("Сумма убытка за " + monthName[yearlyReportRecord.month - 1]  + " не соотвутствуют годовому отчету");
-                    check= false;
+                    System.out.println("Доход за " + monthName[yearlyReportRecord.month - 1] + " несоответствует годовому отчету");
+                    sum--;
                 }
             }
         }
-        return check;
-    }
-
-    void printCheckReport(){
-        if (!checkAmountOfReports()){
-            System.out.println("Считывание данных завершено...");
+        if (sum == yearlyReportRecords.size()) {
+            System.out.println("Сверка отчетов успешно завершена...");
         }
     }
 
-    String getMaxIncomeItemName(int monthKey){
+    String getMaxIncomeItemName(int monthKey) {
         int maxIncome = 0;
-        String item = "";
+        String item;
         String maxItem = "";
-        int sum = 0;
+        int sum;
         for (MonthlyReportRecord monthInfo : monthlyReportRecords.get(monthKey)) {
-            if (monthInfo.isExpense) {
-                sum += monthInfo.quantity + monthInfo.sumOfOne;
+            if (!monthInfo.isExpense) {
+                sum = monthInfo.quantity * monthInfo.sumOfOne;
                 item = monthInfo.itemName;
+                if (sum > maxIncome) {
+                    maxIncome = sum;
+                    maxItem = item;
+                }
             }
-        }
-        if (sum > maxIncome) {
-            maxIncome = sum;
-            maxItem = item;
         }
         return "Прибыльный товар: " + maxItem + "\nСумма: " + maxIncome;
     }
@@ -126,30 +121,70 @@ public class InterfaceLogic {
 
     String getMaxExpenseItemName(int monthKey) {
         int maxExpense = 0;
-        String item = "";
+        String item;
         String maxExpenseItem = "";
-        int sum = 0;
+        int sum;
         for (MonthlyReportRecord monthInfo : monthlyReportRecords.get(monthKey)) {
-            if (!monthInfo.isExpense) {
-                sum += monthInfo.quantity + monthInfo.sumOfOne;
+            if (monthInfo.isExpense) {
+                sum = monthInfo.quantity * monthInfo.sumOfOne;
                 item = monthInfo.itemName;
+                if (sum > maxExpense) {
+                    maxExpense = sum;
+                    maxExpenseItem = item;
+                }
             }
-        }
-        if (sum > maxExpense) {
-            maxExpense = sum;
-            maxExpenseItem = item;
         }
         return "Нерентабельный товар: " + maxExpenseItem + "\nСумма: " + maxExpense;
     }
 
-    void printMonthReport(){
-        for(int numberOfMonth : monthlyReportRecords.keySet()){
-            System.out.println("Отчет за " + monthName[numberOfMonth - 1] + ":");
-            System.out.println(getMaxIncomeItemName(numberOfMonth));
-            System.out.println(getMaxExpenseItemName(numberOfMonth));
-            System.out.println(getSumExpenseOfTheMonth(numberOfMonth));
-            System.out.println(getSumIncomeOfTheMonth(numberOfMonth));
-
+    void getProfitOfTheMonth() {
+        for (int month : monthlyReportRecords.keySet()) {
+            int profitOfTheMonth = getSumIncomeOfTheMonth(month) - getSumExpenseOfTheMonth(month);
+            if (profitOfTheMonth < 0) {
+                System.out.println("Убыток в " + month + " месяце составил: " + profitOfTheMonth + " руб.");
+            } else {
+                System.out.println("Прибыль в " + month + " месяце составила: " + profitOfTheMonth + " руб.");
+            }
         }
+    }
+
+    int getAvgProfitOfTheYear() {
+        int avgSum = 0;
+        for (int month : monthlyReportRecords.keySet()) {
+            avgSum += getSumIncomeOfTheMonth(month);
+        }
+        return avgSum / monthlyReportRecords.keySet().size();
+    }
+
+    int getAvgExpenseOfTheYear() {
+        int avgSum = 0;
+        for (int month : monthlyReportRecords.keySet()) {
+            avgSum += getSumExpenseOfTheMonth(month);
+        }
+        return avgSum / monthlyReportRecords.keySet().size();
+    }
+
+    void printMonthReport() {
+        for (int month : monthlyReportRecords.keySet()) {
+            System.out.println("Отчет за " + monthName[month - 1] + ":");
+            System.out.println(getMaxIncomeItemName(month));
+            System.out.println(getMaxExpenseItemName(month));
+        }
+    }
+
+    void printYearReport() {
+        System.out.println("Отчет за " + yearName[0] + " год:");
+        getProfitOfTheMonth();
+        System.out.println("Средний расход за все месяцы в году: " + getAvgExpenseOfTheYear() + " руб.");
+        System.out.println("Средний доход за все месяцы в году: " + getAvgProfitOfTheYear() + " руб.");
+    }
+
+    void printMenu() {
+        System.out.println("1 -- Считать все месячные отчёты");
+        System.out.println("2 -- Считать годовой отчёт");
+        System.out.println("3 -- Сверить отчёты");
+        System.out.println("4 -- Вывести информацию о всех месячных отчётах");
+        System.out.println("5 -- Вывести информацию о годовом отчёте");
+        System.out.println("0 -- Выход");
     }
 }
