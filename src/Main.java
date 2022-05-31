@@ -9,15 +9,15 @@ public class Main {
             accountingAutomation.printMenu();
             int command = scanner.nextInt();
             if (command == 1) {
-                accountingAutomation.getMonthlyRecords();
+                accountingAutomation.monthlyReport.getMonthlyRecords();
             } else if (command == 2) {
-                accountingAutomation.getYearlyRecords();
+                accountingAutomation.yearlyReport.getYearlyRecords();
             } else if (command == 3) {
                 accountingAutomation.checkAmountOfReports();
             } else if (command == 4) {
-                accountingAutomation.printMonthReport();
+                accountingAutomation.monthlyReport.printMonthReport();
             } else if (command == 5) {
-                accountingAutomation.printYearReport();
+                accountingAutomation.yearlyReport.printYearReport();
             } else if (command == 0) {
                 break;
             }

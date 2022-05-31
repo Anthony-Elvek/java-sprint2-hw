@@ -2,11 +2,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class YearlyReport {
+    ArrayList<YearlyReportRecord> yearlyReportRecords;
+    HashMap<Integer, Integer> incomeRecord;
+    HashMap<Integer, Integer> expenseRecord;
     FileReader fileReader = new FileReader();
     MonthlyReport monthlyReport = new MonthlyReport();
     String[] yearName = {"2021"};
 
-    void readYearlyRecords(ArrayList<YearlyReportRecord> yearlyReportRecords) {
+    YearlyReport() {
+        yearlyReportRecords = new ArrayList<>();
+        incomeRecord = new HashMap<>();
+        expenseRecord = new HashMap<>();
+    }
+
+    void readYearlyRecords() {
         String yearRecord = fileReader.readFileContentsOrNull("resources/y.2021.csv");
         String[] lines = yearRecord.split("\n");
         for (int i = 1; i < lines.length; i++) {
@@ -20,7 +29,7 @@ public class YearlyReport {
         }
     }
 
-    void readYearStatistic(ArrayList<YearlyReportRecord> yearlyReportRecords, HashMap<Integer, Integer> incomeRecord, HashMap<Integer, Integer> expenseRecord) {
+    void readYearStatistic() {
         for (YearlyReportRecord record : yearlyReportRecords) {
             if (record.isExpense) {
                 expenseRecord.put(record.month, record.amount);
@@ -40,7 +49,7 @@ public class YearlyReport {
     }
 
 
-    void getAvgExpenseAndIncomeOfTheYear(HashMap<Integer, Integer> incomeRecord, HashMap<Integer, Integer> expenseRecord) {
+    void getAvgExpenseAndIncomeOfTheYear() {
         int sumIncome = 0;
         for (Integer record : incomeRecord.values()) {
             sumIncome += record;
@@ -54,5 +63,24 @@ public class YearlyReport {
         }
         int avgExpense = sumExpense / expenseRecord.size();
         System.out.println("Средняя прибыль за год составила: " + avgExpense + " руб.");
+    }
+
+    void getYearlyRecords() {
+        if (yearlyReportRecords.isEmpty()) {
+            readYearlyRecords();
+            System.out.println("Годовой отчет загружен...");
+        } else {
+            System.out.println("Данные уже загружены...");
+        }
+    }
+
+    void printYearReport() {
+        if (!yearlyReportRecords.isEmpty()) {
+            System.out.println("Отчет за " + yearName[0] + " год:");
+            readYearStatistic();
+            getAvgExpenseAndIncomeOfTheYear();
+        } else {
+            System.out.println("Отчет еще не загружен...");
+        }
     }
 }

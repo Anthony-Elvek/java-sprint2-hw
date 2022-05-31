@@ -1,12 +1,16 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MonthlyReport  {
+public class MonthlyReport {
     HashMap<Integer, ArrayList<MonthlyReportRecord>> monthlyReportRecords;
     String[] monthName = {"январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"};
     FileReader fileReader = new FileReader();
 
-    void readMonthlyRecords(HashMap<Integer, ArrayList<MonthlyReportRecord>> monthlyReportRecords) {
+    MonthlyReport() {
+        monthlyReportRecords = new HashMap<>();
+    }
+
+    void readMonthlyRecords() {
         for (int month = 1; month <= 3; month++) {
             ArrayList<MonthlyReportRecord> recordMonth = new ArrayList<>();
             String monthRecord = fileReader.readFileContentsOrNull("resources/m.20210" + month + ".csv");
@@ -25,7 +29,7 @@ public class MonthlyReport  {
         }
     }
 
-    int getSumIncomeOrExpenseOfTheMonth(HashMap<Integer, ArrayList<MonthlyReportRecord>> monthlyReportRecords, int monthKey, boolean isExpense) {
+    int getSumIncomeOrExpenseOfTheMonth(int monthKey, boolean isExpense) {
         int sum = 0;
         for (MonthlyReportRecord month : monthlyReportRecords.get(monthKey)) {
             if (month.isExpense == isExpense) {
@@ -35,7 +39,7 @@ public class MonthlyReport  {
         return sum;
     }
 
-    String getMaxIncomeItemName(HashMap<Integer, ArrayList<MonthlyReportRecord>> monthlyReportRecords, int monthKey) {
+    String getMaxIncomeItemName(int monthKey) {
         int maxIncome = 0;
         String item;
         String maxItem = "";
@@ -53,7 +57,7 @@ public class MonthlyReport  {
         return "Прибыльный товар: " + maxItem + "\nСумма: " + maxIncome;
     }
 
-    String getMaxExpenseItemName(HashMap<Integer, ArrayList<MonthlyReportRecord>> monthlyReportRecords, int monthKey) {
+    String getMaxExpenseItemName(int monthKey) {
         int maxExpense = 0;
         String item;
         String maxExpenseItem = "";
@@ -69,5 +73,26 @@ public class MonthlyReport  {
             }
         }
         return "Нерентабельный товар: " + maxExpenseItem + "\nСумма: " + maxExpense;
+    }
+
+    void getMonthlyRecords() {
+        if (monthlyReportRecords.isEmpty()) {
+            readMonthlyRecords();
+            System.out.println("Месячные отчеты загружены...");
+        } else {
+            System.out.println("Данные уже загружены...");
+        }
+    }
+
+    void printMonthReport() {
+        if (!monthlyReportRecords.isEmpty()) {
+            for (int month : monthlyReportRecords.keySet()) {
+                System.out.println("Отчет за " + monthName[month - 1] + ":");
+                System.out.println(getMaxIncomeItemName(month));
+                System.out.println(getMaxExpenseItemName(month));
+            }
+        } else {
+            System.out.println("Отчет еще не загружен...");
+        }
     }
 }
